@@ -34,29 +34,15 @@ if [ ! -z "$GIT_NAME" ]; then
 fi
 
 # Remove the test index file if you are pulling in a git repo
-if [ ! -z ${REMOVE_FILES} ] && [ ${REMOVE_FILES} == 0 ]; then
-	echo "skiping removal of files"
+if [ ! -z ${REMOVE_FILES} ] && [ ${REMOVE_FILES} == 1 ]; then
+	rm -rf /var/www/html/*
 else
-	rm -Rf /var/www/html/*
+	echo "skiping removal of files"
 fi
 
 if [ -z "$SKIP_CHOWN" ]; then
 	chown -Rf nginx.nginx /var/www/html
 fi
-
-# Enable custom nginx config files if they exist
-if [ -f /var/www/html/conf/nginx/nginx.conf ]; then
-	cp /var/www/html/conf/nginx/nginx.conf /etc/nginx/nginx.conf
-fi
-
-if [ -f /var/www/html/conf/nginx/nginx-site.conf ]; then
-	cp /var/www/html/conf/nginx/nginx-site.conf /etc/nginx/sites-available/default.conf
-fi
-
-if [ -f /var/www/html/conf/nginx/nginx-site-ssl.conf ]; then
-	cp /var/www/html/conf/nginx/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
-fi
-
 
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
@@ -66,9 +52,9 @@ fi
 
 # Display PHP error's or not
 if [[ "$ERRORS" != "1" ]] ; then
-	echo php_flag[display_errors] = off >> /usr/local/etc/php-fpm.conf
+	echo "php_flag[display_errors] = off" >> /usr/local/etc/php-fpm.conf
 else
-	echo php_flag[display_errors] = on >> /usr/local/etc/php-fpm.conf
+	echo "php_flag[display_errors] = on" >> /usr/local/etc/php-fpm.conf
 fi
 
 # Display Version Details or not
@@ -176,18 +162,19 @@ if [[ "$RUN_SCRIPTS" == "1" ]] ; then
 	fi
 fi
 
+# TODO: Remove from start.sh
 if [ -z "$SKIP_COMPOSER" ]; then
 	# Try auto install for composer
 	if [ -f "/var/www/html/composer.lock" ]; then
-		if [ "$APPLICATION_ENV" == "development" ]; then
-			composer global require hirak/prestissimo
+		if [ "$ENVIRONMENT" == "development" ]; then
 			composer install --working-dir=/var/www/html
 		else
-			composer global require hirak/prestissimo
 			composer install --no-dev --working-dir=/var/www/html
 		fi
 	fi
 fi
+
+# TODO: setup ssmtp by env
 
 # Start supervisord and services
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf
