@@ -2,46 +2,15 @@ FROM php:7.2.10-fpm-alpine
 
 LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
 
-ENV php_conf /usr/local/etc/php-fpm.conf
-ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
-ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
-
-ENV NGINX_VERSION 1.14.0
-ENV LUA_MODULE_VERSION 0.10.13
-ENV DEVEL_KIT_MODULE_VERSION 0.3.0
-ENV LUAJIT_LIB=/usr/lib
-ENV LUAJIT_INC=/usr/include/luajit-2.1
-
-# resolves #166
+# resolves gitlab.com/ric_harvey/nginx-php-fpm#166
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
 
-# tweak php-fpm config
-RUN echo "cgi.fix_pathinfo=0" > ${php_vars} &&\
-	echo "upload_max_filesize = 100M"	>> ${php_vars} &&\
-	echo "post_max_size = 100M"	>> ${php_vars} &&\
-	echo "variables_order = \"EGPCS\""	>> ${php_vars} && \
-	echo "memory_limit = 128M"	>> ${php_vars} && \
-	sed -i \
-		-e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
-		-e "s/pm.max_children = 5/pm.max_children = 4/g" \
-		-e "s/pm.start_servers = 2/pm.start_servers = 3/g" \
-		-e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 2/g" \
-		-e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 4/g" \
-		-e "s/;pm.max_requests = 500/pm.max_requests = 200/g" \
-		-e "s/user = www-data/user = nginx/g" \
-		-e "s/group = www-data/group = nginx/g" \
-		-e "s/;listen.mode = 0660/listen.mode = 0666/g" \
-		-e "s/;listen.owner = www-data/listen.owner = nginx/g" \
-		-e "s/;listen.group = www-data/listen.group = nginx/g" \
-		-e "s/listen = 127.0.0.1:9000/listen = \/var\/run\/php-fpm.sock/g" \
-		-e "s/^;clear_env = no$/clear_env = no/" \
-		${fpm_conf}
-#	ln -s /etc/php7/php.ini /etc/php7/conf.d/php.ini && \
-#	find /etc/php7/conf.d/ -name "*.ini" -exec sed -i -re 's/^(\s*)#(.*)/\1;\2/g' {} \;
-
 # Install nginx
-RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+RUN NGINX_VERSION=1.14.0 \
+	&& LUA_MODULE_VERSION=0.10.13 \
+	&& DEVEL_KIT_MODULE_VERSION=0.3.0 \
+	&& GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -90,6 +59,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--add-module=/usr/src/ngx_devel_kit-$DEVEL_KIT_MODULE_VERSION \
 		--add-module=/usr/src/lua-nginx-module-$LUA_MODULE_VERSION \
 	" \
+	&& export LUAJIT_LIB=/usr/lib \
+	&& export LUAJIT_INC=/usr/include/luajit-2.1 \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
 	&& apk add --no-cache --virtual .build-deps \
@@ -109,7 +80,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		perl-dev \
 		luajit-dev \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc	-o nginx.tar.gz.asc \
+	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc -o nginx.tar.gz.asc \
 	&& curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v$DEVEL_KIT_MODULE_VERSION.tar.gz -o ndk.tar.gz \
 	&& curl -fSL https://github.com/openresty/lua-nginx-module/archive/v$LUA_MODULE_VERSION.tar.gz -o lua.tar.gz \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -130,7 +101,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& tar -zxC /usr/src -f ndk.tar.gz \
 	&& tar -zxC /usr/src -f lua.tar.gz \
-	&& rm nginx.tar.gz ndk.tar.gz lua.tar.gz \
+	&& rm nginx.tar.gz nginx.tar.gz.asc ndk.tar.gz lua.tar.gz \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
@@ -182,10 +153,11 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
+# Configure php-fpm
 RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-		echo /etc/apk/respositories && \
-		apk update && apk upgrade &&\
-		apk add --no-cache \
+	echo /etc/apk/respositories && \
+	apk update && apk upgrade &&\
+	apk add --no-cache \
 		bash \
 		openssh-client \
 		wget \
@@ -213,58 +185,66 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
 		libffi-dev \
 		freetype-dev \
 		sqlite-dev \
-		libjpeg-turbo-dev && \
-		docker-php-ext-configure gd \
-			--with-gd \
-			--with-freetype-dir=/usr/include/ \
-			--with-png-dir=/usr/include/ \
-			--with-jpeg-dir=/usr/include/ && \
-		#curl iconv session
-		#docker-php-ext-install pdo_mysql pdo_sqlite mysqli mcrypt gd exif intl xsl json soap dom zip opcache && \
-		docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
-		pecl install xdebug-2.6.0 && \
-		docker-php-source delete && \
-		mkdir -p /etc/nginx && \
-		mkdir -p /var/www/app && \
-		mkdir -p /run/nginx && \
-		mkdir -p /var/log/supervisor && \
-		EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
-		php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-		php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-		php composer-setup.php --install-dir=/usr/bin --filename=composer && \
-		php -r "unlink('composer-setup.php');"	&& \
-		pip install -U pip && \
-		pip install -U certbot && \
-		mkdir -p /etc/letsencrypt/webrootauth && \
-		apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev make autoconf
-#		apk del .sys-deps
-#		ln -s /usr/bin/php7 /usr/bin/php
+		libjpeg-turbo-dev \
+		ssmtp && \
+	docker-php-ext-configure gd \
+		--with-gd \
+		--with-freetype-dir=/usr/include/ \
+		--with-png-dir=/usr/include/ \
+		--with-jpeg-dir=/usr/include/ && \
+	docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
+	pecl install xdebug-2.6.0 && \
+	docker-php-source delete && \
+	mkdir -p /etc/nginx && \
+	mkdir -p /var/www/html && \
+	mkdir -p /run/nginx && \
+	mkdir -p /var/log/supervisor && \
+	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
+	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+	php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+	php composer-setup.php --install-dir=/usr/bin --filename=composer && \
+	php -r "unlink('composer-setup.php');" && \
+	composer global require hirak/prestissimo && \
+	pip install -U pip && \
+	pip install -U certbot && \
+	mkdir -p /etc/letsencrypt/webrootauth && \
+	apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev make autoconf
 
-COPY conf/supervisord.conf /etc/supervisord.conf
+# tweak php-fpm config
+RUN echo "" > /usr/local/etc/php/conf.d/05-php.ini && \
+	{ \
+		echo "cgi.fix_pathinfo = 0"; \
+		echo "upload_max_filesize = 100M"; \
+		echo "post_max_size = 100M"; \
+		echo "variables_order = \"EGPCS\""; \
+		echo "memory_limit = 128M"; \
+	} >> /usr/local/etc/php/conf.d/05-php.ini && \
+	sed -i \
+		-e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
+		-e "s/pm.max_children = 5/pm.max_children = 4/g" \
+		-e "s/pm.start_servers = 2/pm.start_servers = 3/g" \
+		-e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 2/g" \
+		-e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 4/g" \
+		-e "s/;pm.max_requests = 500/pm.max_requests = 200/g" \
+		-e "s/user = www-data/user = nginx/g" \
+		-e "s/group = www-data/group = nginx/g" \
+		-e "s/;listen.mode = 0660/listen.mode = 0666/g" \
+		-e "s/;listen.owner = www-data/listen.owner = nginx/g" \
+		-e "s/;listen.group = www-data/listen.group = nginx/g" \
+		-e "s/listen = 127.0.0.1:9000/listen = \/var\/run\/php-fpm.sock/g" \
+		-e "s/^;clear_env = no$/clear_env = no/" \
+		/usr/local/etc/php-fpm.d/www.conf
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./conf/supervisord.conf /etc/
 
-# nginx site conf
-RUN mkdir -p /etc/nginx/sites-available/ && \
-	mkdir -p /etc/nginx/sites-enabled/ && \
-	mkdir -p /etc/nginx/ssl/ && \
-	rm -Rf /var/www/* && \
-	mkdir /var/www/html/
-COPY conf/nginx-site.conf /etc/nginx/sites-available/default.conf
-COPY conf/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
-RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+# Copy nginx config and enable default vhost
+COPY ./conf/nginx/ /etc/nginx/
+RUN mkdir -p /etc/nginx/ssl/ && \
+	mkdir -p /etc/nginx/sites-enabled && \
+	ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
-# Add Scripts
-COPY scripts/start.sh /start.sh
-COPY ./scripts/letsencrypt-setup ./scripts/letsencrypt-renew /usr/bin/
-RUN chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew && chmod 755 /start.sh
+# Add spaceonfire
+COPY ./spaceonfire/ /opt/spaceonfire/
+# RUN chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew && chmod 755 /start.sh
 
-# Expose http(s) ports
-EXPOSE 443 80
-
-WORKDIR /var/www/html
-CMD ["/start.sh"]
-
-# copy in code
-COPY src/ /var/www/html/
-COPY errors/ /var/www/errors/
+# CMD ["/start.sh"]
