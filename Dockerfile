@@ -195,10 +195,6 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
 	docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
 	pecl install xdebug-2.6.0 && \
 	docker-php-source delete && \
-	mkdir -p /etc/nginx && \
-	mkdir -p /var/www/html && \
-	mkdir -p /run/nginx && \
-	mkdir -p /var/log/supervisor && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
 	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
 	php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
@@ -239,12 +235,18 @@ COPY ./conf/supervisord.conf /etc/
 
 # Copy nginx config and enable default vhost
 COPY ./conf/nginx/ /etc/nginx/
-RUN mkdir -p /etc/nginx/ssl/ && \
+RUN mkdir -p /etc/nginx && \
+	mkdir -p /run/nginx && \
+	mkdir -p /var/log/supervisor && \
+	mkdir -p /var/www/html && \
+	mkdir -p /var/www/errors && \
+	mkdir -p /etc/nginx/ssl/ && \
+	mkdir -p /etc/nginx/vhost.common.d && \
 	mkdir -p /etc/nginx/sites-enabled && \
 	ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
 # Add spaceonfire
 COPY ./spaceonfire/ /opt/spaceonfire/
-# RUN chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew && chmod 755 /start.sh
+RUN chmod +x /opt/spaceonfire/init.sh && /opt/spaceonfire/init.sh
 
-# CMD ["/start.sh"]
+CMD ["sof-start"]
