@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  test:
+    build: ../../
+    volumes:
+    - ./:/var/www/html:Z
+    ports:
+    - 8080:80
+    environment:
+    - RUN_SCRIPTS=1
+    - SOF_PRESET=bitrix
+    - PUID=1000
