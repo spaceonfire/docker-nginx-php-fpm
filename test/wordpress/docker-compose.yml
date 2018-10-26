@@ -7,3 +7,4 @@ services:
     - 8080:80
     environment:
     - SOF_PRESET=wordpress
+    - PAGER=more
