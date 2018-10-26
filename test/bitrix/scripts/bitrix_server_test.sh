@@ -1,3 +1,6 @@
 #!/bin/bash
 set -e
-wget http://dev.1c-bitrix.ru/download/scripts/bitrix_server_test.php
+
+if [ ! -f bitrix_server_test.php ]; then
+	wget http://dev.1c-bitrix.ru/download/scripts/bitrix_server_test.php
+fi
