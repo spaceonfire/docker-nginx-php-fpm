@@ -186,7 +186,8 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
 		freetype-dev \
 		sqlite-dev \
 		libjpeg-turbo-dev \
-		ssmtp && \
+		ssmtp \
+		apk-cron && \
 	docker-php-ext-configure gd \
 		--with-gd \
 		--with-freetype-dir=/usr/include/ \

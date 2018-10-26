@@ -38,3 +38,10 @@ function cloneAndLinkRecursive() {
 cloneAndLinkRecursive "$presetDir/php" "/usr/local/etc/php/conf.d"
 
 cloneAndLinkRecursive "$presetDir/nginx" "/etc/nginx"
+
+cloneAndLinkRecursive "$presetDir/supervisor" "/etc/supervisor/conf.d"
+
+if [ -d "$presetDir/bin" ]; then
+	chmod -Rf 750 $presetDir/bin/*; sync;
+	for i in $presetDir/bin/*; do $i ; done
+fi
