@@ -2,10 +2,10 @@
 set -e
 
 if [ "$APPLICATION_ENV" == "production" ]; then
-	composer update
-		--no-dev
-		--prefer-dist
-		--classmap-authoritative
+	composer update \
+		--no-dev \
+		--prefer-dist \
+		--classmap-authoritative \
 		--optimize-autoloader
 else
 	composer update
