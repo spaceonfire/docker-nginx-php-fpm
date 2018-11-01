@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  test:
+    build: ../../
+    volumes:
+    - ../../spaceonfire:/opt/spaceonfire:Z
+    ports:
+    - 8080:80
+    environment:
+    - RUN_SCRIPTS=1
+    - PUID=1000
+    - PAGER=more

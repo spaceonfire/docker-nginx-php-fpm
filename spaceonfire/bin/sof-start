@@ -56,7 +56,7 @@ if [ ! -z "$SOF_PRESET" ]; then
 	select-preset $SOF_PRESET
 fi
 
-# TODO: setup ssmtp by env
+ssmtp-setup
 
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
