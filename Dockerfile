@@ -232,6 +232,8 @@ RUN echo "" > /usr/local/etc/php/conf.d/05-php.ini && \
 		-e "s/^;clear_env = no$/clear_env = no/" \
 		/usr/local/etc/php-fpm.d/www.conf
 
+EXPOSE 80 443
+
 COPY ./conf/supervisord.conf /etc/
 
 # Copy nginx config and enable default vhost
