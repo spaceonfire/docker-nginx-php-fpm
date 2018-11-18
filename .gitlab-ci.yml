@@ -1,5 +1,8 @@
 image: docker:latest
 
+services:
+  - docker:dind
+
 .build: &build
   stage: build
   before_script:
