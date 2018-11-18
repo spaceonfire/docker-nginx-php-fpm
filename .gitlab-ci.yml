@@ -1,0 +1,23 @@
+image: docker:latest
+
+.build: &build
+  stage: build
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG" .
+    - docker push "$CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG"
+
+build-master:
+  <<: *build
+  variables:
+    DOCKER_IMAGE_TAG: latest
+  only:
+    - master
+
+build-tags:
+  <<: *build
+  variables:
+    DOCKER_IMAGE_TAG: $CI_COMMIT_REF_SLUG
+  only:
+    - tags
