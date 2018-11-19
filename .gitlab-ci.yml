@@ -22,6 +22,6 @@ build-master:
 build-tags:
   <<: *build
   variables:
-    DOCKER_IMAGE_TAG: $CI_COMMIT_REF_SLUG
+    DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME
   only:
     - tags
