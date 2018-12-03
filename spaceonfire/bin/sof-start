@@ -34,7 +34,7 @@ else
 fi
 
 # Copy default index.html
-if [ ! -e "$WEBROOT/index.html" ]; then
+if [ $(ls /var/www/html/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
 	cp -f /opt/spaceonfire/html/index.html $WEBROOT
 fi
 
