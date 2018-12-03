@@ -3,6 +3,7 @@ version: '3'
 services:
   test:
     build: ../../
+    image: spaceonfire/nginx-php-fpm:next
     volumes:
     - ./:/var/www/html:Z
     ports:
