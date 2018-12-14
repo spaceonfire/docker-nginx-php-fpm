@@ -195,7 +195,7 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
 		--with-png-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ && \
 	docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
-	pecl install xdebug-2.6.0 && \
+	pecl install xdebug-2.6.1 && \
 	docker-php-source delete && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
 	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \

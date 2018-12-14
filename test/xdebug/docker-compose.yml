@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  test:
+    build: ../../
+    image: spaceonfire/nginx-php-fpm:next
+    ports:
+      - 8080:80
+    environment:
+      - SOF_PRESET=default
+      - APPLICATION_ENV=development
+      - ENABLE_XDEBUG=1
+      - PAGER=more
+      - PUID=1000
+    volumes:
+      - ./:/var/www/html:Z

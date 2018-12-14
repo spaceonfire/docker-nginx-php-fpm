@@ -132,7 +132,12 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 						echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)"
 						echo "xdebug.remote_enable=1"
 						echo "xdebug.remote_autostart=1"
-						echo "xdebug.remote_connect_back=1"
+						echo "xdebug.remote_connect_back=0"
+						echo "xdebug.remote_host=$(ip route|awk '/default/ { print $3 }')"
+						echo "xdebug.idekey=docker"
+						echo "xdebug.var_display_max_depth=-1"
+						echo "xdebug.var_display_max_children=-1"
+						echo "xdebug.var_display_max_data=-1"
 					} > $XdebugFile
 				fi
 			fi
