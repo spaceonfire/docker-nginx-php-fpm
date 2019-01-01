@@ -33,11 +33,6 @@ else
 	WEBROOT=/var/www/html
 fi
 
-# Copy default index.html
-if [ $(ls /var/www/html/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
-	cp -f /opt/spaceonfire/html/index.html $WEBROOT
-fi
-
 # Recreate nginx user with passed UID and GID
 if [ ! -z "$PUID" ]; then
 	if [ -z "$PGID" ]; then
@@ -50,6 +45,12 @@ fi
 
 if [ -z "$SKIP_CHOWN" ]; then
 	chown -Rf nginx.nginx /var/www/html
+fi
+
+# Copy default index.html
+if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
+	cp -f /opt/spaceonfire/html/index.html $WEBROOT
+	chown -f nginx.nginx "$WEBROOT/index.html"
 fi
 
 if [ ! -z "$SOF_PRESET" ]; then
