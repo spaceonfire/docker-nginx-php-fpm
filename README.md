@@ -42,7 +42,7 @@ docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest
 -   [Архитектура образа](./docs/architecture.md)
 -   [Конфигурация](./docs/configure.md)
 -   [Пресеты](./docs/presets.md)
--   [Идентификаторы пользователя / группы](./docs/uid_gid_mapping.md)
+-   [Идентификаторы пользователя / группы](./docs/uid_gid.md)
 -   [Настройка Nginx](./docs/nginx_configuration.md)
 -   [PHP модули](./docs/php_modules.md)
 -   [Xdebug](./docs/xdebug.md)
