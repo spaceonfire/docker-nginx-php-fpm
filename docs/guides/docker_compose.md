@@ -1,28 +1,68 @@
+# Гид Docker Compose
 
-## Docker Compose Guide
-This guide will show you how to make a quick and easy docker compose file to get your container running using the compose tool.
+Данный гид покажет, как быстро и просто вы можете запустить ваше веб-приложение в контейнере используя утилиту docker-compose.
 
+## Создаем конфиг
 
-### Creating a compose file
-Create a docker-compose.yml file with the following contents:
+Сойдайте файл `docker-compose.yml` в корне вашего приложения со следующим содержанием:
 
-```
-version: '2'
+```yaml
+version: '3'
 
 services:
-  nginx-php-fpm:
-    image: richarvey/nginx-php-fpm:latest
-    restart: always
+  app:
+    image: spaceonfire/nginx-php-fpm:latest
     environment:
-      SSH_KEY: '<YOUR _KEY_HERE>'
-      GIT_REPO: 'git@github.com:<YOUR_ACCOUNT>/<YOUR_REPO>.git'
-      GIT_EMAIL: 'void@ngd.io'
-      GIT_NAME: '<YOUR_NAME>'
+      - SOF_PRESET=wordpress
+      - SKIP_CHOWN=1
+      - PUID=1000
+      - ENABLE_XDEBUG=1
+    volumes:
+      - ./:/var/www/html:Z
+    ports:
+      - 80:80
+      - 443:443
 ```
-You can of course expand on this and add volumes, or extra environment parameters as defined in the [config flags](../config_flags.md) documentation.
 
-### Running
-To start the container simply run: ```docker-compose up -d```
+Данный пример запустит контейнер с примонтированной директорией с вашим кодом
+и свяжет порты 80 и 443 между хостом и контейнером, так что вы сможете в браузере увидеть ваше
+веб-приложение по адресу `http://localhost`.
 
-### Clean Up
-To shut down the compose network and container runt he following command: ```docker-compose down```
+Если вы не хотите завязывать один проект на порты 80 и 443, то можно использовать прокси из нашего
+[проекта `localhost-docker`](https://github.com/dockeronfire/localhost-docker).
+Тогда конфиг `docker-compose.yml` будет выглядеть немного иначе:
+
+```yaml
+version: '3'
+
+services:
+  app:
+    image: spaceonfire/nginx-php-fpm:latest
+    networks:
+      - default
+      - localhost
+    environment:
+      - VIRTUAL_HOST=${DOMAIN}
+      - VIRTUAL_PORT=80
+      - SOF_PRESET=wordpress
+      - SKIP_CHOWN=1
+      - PUID=1000
+      - ENABLE_XDEBUG=1
+    volumes:
+      - ./:/var/www/html:Z
+
+networks:
+  localhost:
+    external: true
+
+```
+
+Вы также можете передать другие переменные окружения из раздела [Конфигурация](../configure.md) документации.
+
+## Запуск
+
+Чтобы запустить контейнер просто выполните: `docker-compose up -d`
+
+## Остановка
+
+Выполните `docker-compose down` чтобы остановить и удалить контейнер и созданную сеть.

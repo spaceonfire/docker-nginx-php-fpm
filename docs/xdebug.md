@@ -1,6 +1,9 @@
-## Install PHP Modules
-Xdebug comes pre-installed.   To enable xdebug you need to add a couple environment variables:
+# Xdebug
 
-- `ENABLE_XDEBUG=1` This will add the xdebug.ini to your php extensions
-- `XDEBUG_CONFIG=remote_host=you.local.ip.here` Sets an xdebug remote host environment var.   This is usually your actual local computers IP.
-- `PHP_IDE_CONFIG=serverName=NameUsedInPhpStormServerConfig` This is an example of how to use this in PhpStorm.   You configure a server in php storm with a name, set that in this var.
+Xdebug предустановлен в образ `spaceonfire/nginx-php-fpm`.
+Чтобы включить отладку через xdebug вам необходимо передать несколько переменных окружения:
+
+-   `ENABLE_XDEBUG=1` это добавит xdebug.ini в ваши расширения PHP
+-   `XDEBUG_REMOTE_HOST=you.local.ip.here` устанавливает настройку `xdebug.remote_host`.
+    Здесь необходимо указать IP адрес хоста Docker. Если не указывать берется значение `default` из `ip route`,
+    что отлично работает на Linux.
