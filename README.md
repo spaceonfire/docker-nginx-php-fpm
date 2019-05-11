@@ -1,67 +1,53 @@
 # spaceonfire/nginx-php-fpm
 
-Alpine-based docker image with NGINX and PHP-FPM. This is a fork of [`richarvey/nginx-php-fpm`](https://gitlab.com/ric_harvey/nginx-php-fpm) image.
+`spaceonfire/nginx-php-fpm` - Docker образ, основанный на Alpine Linux, с установленными Nginx и PHP-FPM.
 
-## Overview
+## Обзор
 
-This is a Dockerfile/image to build a container for nginx and php-fpm, with the ability to pull website code from git when the container is created, as well as allowing the container to push and pull changes to the code to and from git. The container also has the ability to update templated files with variables passed to docker in order to update your code and settings. There is support for lets encrypt SSL configurations, custom nginx configs, core nginx/PHP variable overrides for running preferences, X-Forwarded-For headers and UID mapping for local volume support.
+Данный Docker образ позволяет докеризировать любое приложение на PHP. `spaceonfire/nginx-php-fpm`
+из коробки предоставляет набор различных пресетов, покрывающих потребность запуска различных веб-приложений
+на PHP. Доступны настройки для простых PHP приложений, а также веб-приложений на WordPress, Laravel и 1С-Битрикс.
 
-If you have improvements or suggestions please open an issue or pull request on the GitHub project page.
+Если у вас есть улучшения или предложения, пожалуйста,
+не стесняйтесь открывать issue илл pull request на странице проекта GitHub.
 
-### Versioning
-| Docker Tag | Git Release | Nginx Version | PHP Version | Alpine Version |
-|-----|-------|-----|--------|--------|
-| latest/1.5.7 | Master Branch |1.14.0 | 7.2.10 | 3.7 |
+### Версии ПО в образе
 
-For other tags please see: [versioning](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/versioning.md)
+| Docker Tag   | Git Release   | Nginx Version | PHP Version | Alpine Version |
+| ------------ | ------------- | ------------- | ----------- | -------------- |
+| latest/1.3.3 | Master Branch | 1.14.0        | 7.2.10      | 3.7            |
 
-### Links
-- [https://gitlab.com/ric_harvey/nginx-php-fpm](https://gitlab.com/ric_harvey/nginx-php-fpm)
-- [https://registry.hub.docker.com/u/richarvey/nginx-php-fpm/](https://registry.hub.docker.com/u/richarvey/nginx-php-fpm/)
+## Быстрый старт
 
-## Quick Start
-To pull from docker hub:
+Спуллить образ с Docker Hub:
+
 ```
-docker pull richarvey/nginx-php-fpm:latest
-```
-### Running
-To simply run the container:
-```
-sudo docker run -d richarvey/nginx-php-fpm
-```
-To dynamically pull code from git when starting:
-```
-docker run -d -e 'GIT_EMAIL=email_address' -e 'GIT_NAME=full_name' -e 'GIT_USERNAME=git_username' -e 'GIT_REPO=github.com/project' -e 'GIT_PERSONAL_TOKEN=<long_token_string_here>' richarvey/nginx-php-fpm:latest
+docker pull spaceonfire/nginx-php-fpm:latest
 ```
 
-You can then browse to ```http://<DOCKER_HOST>``` to view the default install files. To find your ```DOCKER_HOST``` use the ```docker inspect``` to get the IP address (normally 172.17.0.2)
+### Запуск простого PHP приложения
 
-For more detailed examples and explanations please refer to the documentation.
-## Documentation
+Чтобы запустить ваше простое PHP приложение, не требующее особых правил роутинга, в директории с исходным кодом выполните:
 
-- [Building from source](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/building.md)
-- [Versioning](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/versioning.md)
-- [Config Flags](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/config_flags.md)
-- [Git Auth](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_auth.md)
-  - [Personal Access token](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_auth.md#personal-access-token)
-  - [SSH Keys](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_auth.md#ssh-keys)
-- [Git Commands](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_commands.md)
- - [Push](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_commands.md#push-code-to-git)
- - [Pull](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/git_commands.md#pull-code-from-git-refresh)
-- [Repository layout / webroot](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/repo_layout.md)
- - [webroot](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/repo_layout.md#src--webroot)
-- [User / Group Identifiers](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/UID_GID_Mapping.md)
-- [Custom Nginx Config files](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/nginx_configs.md)
- - [REAL IP / X-Forwarded-For Headers](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/nginx_configs.md#real-ip--x-forwarded-for-headers)
-- [Scripting and Templating](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/scripting_templating.md)
- - [Environment Variables](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/scripting_templating.md#using-environment-variables--templating)
-- [Lets Encrypt Support](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/lets_encrypt.md)
- - [Setup](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/lets_encrypt.md#setup)
- - [Renewal](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/lets_encrypt.md#renewal)
-- [PHP Modules](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/php_modules.md)
-- [Xdebug](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/xdebug.md)
-- [Logging and Errors](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/logs.md)
+```
+docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest
+```
 
-## Guides
-- [Running in Kubernetes](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/guides/kubernetes.md)
-- [Using Docker Compose](https://gitlab.com/ric_harvey/nginx-php-fpm/blob/master/docs/guides/docker_compose.md)
+После запуска контейнера вы можете открыть в браузере `http://localhost:8080/`.
+
+Для более подробных примеров обратитесь к документации и гидам.
+
+## Документация
+
+-   [Архитектура образа](./docs/architecture.md)
+-   [Конфигурация](./docs/configure.md)
+-   [Пресеты](./docs/presets.md)
+-   [Идентификаторы пользователя / группы](./docs/uid_gid_mapping.md)
+-   [Настройка Nginx](./docs/nginx_configuration.md)
+-   [PHP модули](./docs/php_modules.md)
+-   [Xdebug](./docs/xdebug.md)
+-   [Логи и ошибки](./docs/logs.md)
+
+## Гиды
+
+-   [Docker Compose](./docs/guides/docker_compose.md)

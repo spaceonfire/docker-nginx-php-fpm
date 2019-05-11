@@ -1,16 +1,36 @@
-## Install PHP Modules
-To install and configure extra PHP modules in this image, first of all drop into the container:
+# PHP модули
+
+## Установка модуля в запущенном контейнере
+
+Для установки и настройки дополнительных PHP модулей необходимо подключиться к контейнеру:
+
 ```
 docker exec -t -i nginx /bin/bash
 ```
-Then configure and install your module:
+
+Затем сконфигурировать и установить нужный модуль:
+
 ```
-/usr/local/bin/docker-php-ext-configure sockets
-/usr/local/bin/docker-php-ext-install sockets
+docker-php-ext-configure sockets
+docker-php-ext-install sockets
 ```
-Now restart php-fpm:
+
+После успешной установки необходимо рестартовать php-fpm:
+
 ```
 supervisorctl restart php-fpm
 ```
 
-We may include a env var to do this in the future.
+## Установка модуля в Dockerfile
+
+Описанный выше пример отлично подходит, когда вам необходимо просто проверить работу с модулем PHP.
+Но если модуль требуется для работы вашего веб-приложения, его желательно устанавливать еще на этапе
+сборки контейнера. Для этого добавьте команды установки в ваш `Dockerfile`, например:
+
+```dockerfile
+RUN docker-php-ext-configure sockets && \
+    docker-php-ext-install sockets
+```
+
+Вы можете добавить эту команду к вашей собственной инструкции `RUN`. Также стоит обратить внимание,
+что для установки некоторых модулей может потребоваться также установка некоторых других пакетов через `apk add`.
