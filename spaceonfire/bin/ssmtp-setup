@@ -37,7 +37,7 @@ function setupSsmtpConf() {
 		$conf[] = 'Debug=YES';
 	}
 
-	if (strpos(strtolower($ssmtp['scheme']), 'tls') !== false) {
+	if (stripos($ssmtp['scheme'], 'tls') !== false) {
 		$conf[] = 'UseTLS=YES';
 		$conf[] = 'TLS_CA_File=/etc/ssl/certs/ca-certificates.crt';
 	}
@@ -65,7 +65,7 @@ function setupRevAliases() {
 
 	$mailhub = $ssmtp['host'] . ($ssmtp['port'] ? ':' . $ssmtp['port'] : '');
 
-	$users = array_map(function ($user) use ($mailhub) {
+	$users = array_map(static function ($user) use ($mailhub) {
 		return $user . ':' . $_ENV['SSMTP_DEFAULT_FROM'] . ':' . $mailhub;
 	}, $users);
 
