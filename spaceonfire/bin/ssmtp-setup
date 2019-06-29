@@ -39,9 +39,15 @@ function setupSsmtpConf() {
 
 	if (stripos($ssmtp['scheme'], 'tls') !== false) {
 		$conf[] = 'UseTLS=YES';
-		$conf[] = 'TLS_CA_File=/etc/ssl/certs/ca-certificates.crt';
+
+		if ($_ENV['SSMTP_NO_STARTTLS']) {
+			$conf[] = 'TLS_CA_File=/etc/ssl/certs/ca-certificates.crt';
+		} else {
+			$conf[] = 'UseSTARTTLS=YES';
+		}
 	}
 
+	$conf[] = '';
 	$conf = implode("\n", $conf);
 	file_put_contents('/etc/ssmtp/ssmtp.conf', $conf, FILE_APPEND | LOCK_EX);
 }

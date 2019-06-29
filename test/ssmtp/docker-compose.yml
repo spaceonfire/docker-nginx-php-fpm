@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  test:
+    build: ../../
+    image: spaceonfire/nginx-php-fpm:next
+    ports:
+      - 8080:80
+    environment:
+      - SOF_PRESET=default
+      - APPLICATION_ENV=development
+      - PAGER=more
+      #- SSMTP_URI=smtp://mailcatcher:25
+      - SSMTP_URI=tls://apikey:yourapikey@smtp.sendgrid.net:587
+      - SSMTP_DEFAULT_FROM=info@docker.local
+    volumes:
+      - ./:/var/www/html:Z
