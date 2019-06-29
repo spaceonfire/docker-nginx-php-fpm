@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  test:
+    build: ../../
+    image: spaceonfire/nginx-php-fpm:next
+    ports:
+    - 8080:80
+    environment:
+    - SOF_PRESET=single-entrypoint
+    - ENTRYPOINT_SCRIPT=router.php
+    - PAGER=more
