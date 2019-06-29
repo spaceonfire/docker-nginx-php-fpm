@@ -4,7 +4,7 @@ LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
 
 # resolves gitlab.com/ric_harvey/nginx-php-fpm#166
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
 
 # Install nginx
 RUN NGINX_VERSION=1.14.0 \
