@@ -25,6 +25,5 @@
 | `SSMTP_NO_STARTTLS`       | Укажите "1", чтобы использовать настройки `UseTLS` и `TLS_CA_File` вместо `UseSTARTTLS` для ssmtp (используется только при указании протокола `tls` в `SSMTP_URI`)                                  |
 | `DOMAIN`                  | Укажите свой домен, чтобы добавить настройку RewriteDomain в конфиг ssmtp                                                                                                                           |
 | `SSMTP_DEFAULT_FROM`      | Укажите email, с которого должная отправляться почта по-умолчанию                                                                                                                                   |
-| `SKIP_CHOWN`              | Укажите "1", чтобы избежать смены владельца на `/var/www/html`                                                                                                                                      |
 | `ENABLE_XDEBUG`           | Укажите "1", включить расширение Xdebug                                                                                                                                                             |
 | `XDEBUG_REMOTE_HOST`      | Укажите свой IP адрес для `xdebug.remote_host`. [Подробнее про Xdebug](./xdebug.md)                                                                                                                 |
