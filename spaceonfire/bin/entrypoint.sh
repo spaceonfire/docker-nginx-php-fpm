@@ -18,8 +18,8 @@ if [ ! -z "$PUID" ]; then
 fi
 
 # Setup access rights for nginx group
-setfacl -R -m g:nginx:rwx $COMPOSER_HOME
-setfacl -R -m g:nginx:rwx /var/www/html
+setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null
+setfacl -RL -m g:nginx:rwx /var/www/html >> /dev/null
 
 # Copy default index.html
 if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
@@ -27,10 +27,10 @@ if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
 fi
 
 if [ ! -z "$SOF_PRESET" ]; then
-	/opt/spaceonfire/bin/select-preset $SOF_PRESET
+	/opt/spaceonfire/bin/select-preset.sh $SOF_PRESET
 fi
 
-/opt/spaceonfire/bin/ssmtp-setup
+/opt/spaceonfire/bin/ssmtp-setup.php
 
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
