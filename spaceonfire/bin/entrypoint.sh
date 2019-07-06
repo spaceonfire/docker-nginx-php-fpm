@@ -18,8 +18,8 @@ if [ ! -z "$PUID" ]; then
 fi
 
 # Setup access rights for nginx group
-setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null
-setfacl -RL -m g:nginx:rwx /var/www/html >> /dev/null
+setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null 2>&1
+setfacl -RL -m g:nginx:rwx /var/www/html/ >> /dev/null 2>&1
 
 # Copy default index.html
 if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
