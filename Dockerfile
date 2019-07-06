@@ -12,7 +12,6 @@ ENV \
 
 # Install dependencies
 RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-	apk update && apk upgrade && \
 	apk add --no-cache \
 		nginx \
 		supervisor \
