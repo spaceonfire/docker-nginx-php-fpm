@@ -10,6 +10,7 @@ services:
       - SOF_PRESET=default
       - APPLICATION_ENV=development
       - ENABLE_XDEBUG=1
+      - XDEBUG_IDEKEY=testkey
       - PAGER=more
       - PUID=1000
     volumes:
