@@ -27,3 +27,4 @@
 | `SSMTP_DEFAULT_FROM`      | Укажите email, с которого должная отправляться почта по-умолчанию                                                                                                                                   |
 | `ENABLE_XDEBUG`           | Укажите "1", включить расширение Xdebug                                                                                                                                                             |
 | `XDEBUG_REMOTE_HOST`      | Укажите свой IP адрес для `xdebug.remote_host`. [Подробнее про Xdebug](./xdebug.md)                                                                                                                 |
+| `XDEBUG_IDEKEY`           | Укажите свой IDE key для `xdebug.idekey`. [Подробнее про Xdebug](./xdebug.md)                                                                                                                       |
