@@ -11,7 +11,7 @@ version: '3'
 
 services:
   app:
-    image: spaceonfire/nginx-php-fpm:latest-7.3
+    image: spaceonfire/nginx-php-fpm:latest
     environment:
       - SOF_PRESET=wordpress
       - SKIP_CHOWN=1
@@ -37,7 +37,7 @@ version: '3'
 
 services:
   app:
-    image: spaceonfire/nginx-php-fpm:latest-7.3
+    image: spaceonfire/nginx-php-fpm:latest
     networks:
       - default
       - localhost

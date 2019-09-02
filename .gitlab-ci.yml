@@ -1,3 +1,7 @@
+stages:
+  - build
+  - latest
+
 variables:
   PHP_7_2: 7.2.21
   PHP_7_3: 7.3.8
@@ -52,9 +56,9 @@ build-tags-7-2:
 build-next-7-3:
   <<: *build
   variables:
-    DOCKER_IMAGE_TAG: next
+    DOCKER_IMAGE_TAG: next:next-7.3
     PHP_BASEIMAGE_VERION: $PHP_7_3
-    CACHE_FROM: $CI_REGISTRY_IMAGE:next
+    CACHE_FROM: $CI_REGISTRY_IMAGE:next-7.3
   only:
     - next
 
@@ -71,6 +75,39 @@ build-tags-7-3:
   <<: *build
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME-7.3
+    PHP_BASEIMAGE_VERION: $PHP_7_3
+    CACHE_FROM: $CI_REGISTRY_IMAGE:latest-7.3
+  only:
+    - tags
+
+# Latest
+# =========================================
+
+build-next-latest:
+  <<: *build
+  stage: latest
+  variables:
+    DOCKER_IMAGE_TAG: next
+    PHP_BASEIMAGE_VERION: $PHP_7_3
+    CACHE_FROM: $CI_REGISTRY_IMAGE:next-7.3
+  only:
+    - next
+
+build-master-latest:
+  <<: *build
+  stage: latest
+  variables:
+    DOCKER_IMAGE_TAG: latest
+    PHP_BASEIMAGE_VERION: $PHP_7_3
+    CACHE_FROM: $CI_REGISTRY_IMAGE:latest-7.3
+  only:
+    - master
+
+build-tags-latest:
+  <<: *build
+  stage: latest
+  variables:
+    DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME
     PHP_BASEIMAGE_VERION: $PHP_7_3
     CACHE_FROM: $CI_REGISTRY_IMAGE:latest-7.3
   only:

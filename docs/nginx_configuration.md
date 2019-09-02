@@ -26,5 +26,5 @@
 Например:
 
 ```
-docker run -d -e "REAL_IP_HEADER=1" -e "REAL_IP_FROM=10.1.0.0/16" spaceonfire/nginx-php-fpm:latest-7.3
+docker run -d -e "REAL_IP_HEADER=1" -e "REAL_IP_FROM=10.1.0.0/16" spaceonfire/nginx-php-fpm:latest
 ```

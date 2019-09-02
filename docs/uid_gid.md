@@ -11,7 +11,7 @@
 Пример запуска контейнера с передачей идентификаторов пользователя и группы:
 
 ```
-docker run -d -e "PUID=`id -u $USER`" -e "PGID=`id -g $USER`" -v local_dir:/var/www/html spaceonfire/nginx-php-fpm:latest-7.3
+docker run -d -e "PUID=`id -u $USER`" -e "PGID=`id -g $USER`" -v local_dir:/var/www/html spaceonfire/nginx-php-fpm:latest
 ```
 
 Данная команда "подтянет" ваши локальные UID/GID и свяжет их с пользователем в контейнере.

@@ -24,7 +24,7 @@ Docker образ, основанный на Alpine Linux, с установле
 Спуллить образ с Docker Hub:
 
 ```
-docker pull spaceonfire/nginx-php-fpm:latest-7.3
+docker pull spaceonfire/nginx-php-fpm:latest
 ```
 
 ### Запуск простого PHP приложения
@@ -32,7 +32,7 @@ docker pull spaceonfire/nginx-php-fpm:latest-7.3
 Чтобы запустить ваше простое PHP приложение, не требующее особых правил роутинга, в директории с исходным кодом выполните:
 
 ```
-docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest-7.3
+docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest
 ```
 
 После запуска контейнера вы можете открыть в браузере `http://localhost:8080/`.
