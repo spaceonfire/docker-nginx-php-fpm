@@ -16,8 +16,8 @@ Docker образ, основанный на Alpine Linux, с установле
 
 | Docker Tag           | Git Release   | PHP Version | Alpine Version |
 | -------------------- | ------------- | ----------- | -------------- |
-| latest-7.3/2.0.0-7.3 | Master Branch | 7.3.9       | 3.10.0         |
-| latest-7.2/2.0.0-7.2 | Master Branch | 7.2.22      | 3.10.0         |
+| latest-7.3/2.0.0-7.3 | Master Branch | 7.3.8       | 3.10.0         |
+| latest-7.2/2.0.0-7.2 | Master Branch | 7.2.21      | 3.10.0         |
 
 ## Быстрый старт
 
