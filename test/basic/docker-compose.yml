@@ -4,9 +4,12 @@ services:
   test:
     build: ../../
     image: spaceonfire/nginx-php-fpm:next
+    command:
+      - /bin/bash
+    tty: true
     ports:
-    - 8080:80
+      - 8080:8080
     environment:
-    - RUN_SCRIPTS=1
-    - PUID=1000
-    - PAGER=more
+      - RUN_SCRIPTS=1
+      - PUID=1000
+      - PAGER=more

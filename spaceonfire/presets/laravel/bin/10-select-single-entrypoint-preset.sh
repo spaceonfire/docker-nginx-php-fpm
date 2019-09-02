@@ -1,3 +1,3 @@
 #!/bin/bash
 
-select-preset single-entrypoint
+/opt/spaceonfire/bin/select-preset.sh single-entrypoint

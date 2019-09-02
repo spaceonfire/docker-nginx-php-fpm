@@ -1,31 +1,5 @@
 #!/bin/bash
 
-# Disable Strict Host checking for non interactive git clones
-
-mkdir -p -m 0700 /root/.ssh
-# Prevent config files from being filled to infinity by force of stop and restart the container
-echo "" > /root/.ssh/config
-echo -e "Host *\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
-
-if [[ "$GIT_USE_SSH" == "1" ]] ; then
-	echo -e "Host *\n\tUser ${GIT_USERNAME}\n\n" >> /root/.ssh/config
-fi
-
-if [ ! -z "$SSH_KEY" ]; then
-	echo $SSH_KEY > /root/.ssh/id_rsa.base64
-	base64 -d /root/.ssh/id_rsa.base64 > /root/.ssh/id_rsa
-	chmod 600 /root/.ssh/id_rsa
-fi
-
-# Setup git variables
-if [ ! -z "$GIT_EMAIL" ]; then
-	git config --global user.email "$GIT_EMAIL"
-fi
-if [ ! -z "$GIT_NAME" ]; then
-	git config --global user.name "$GIT_NAME"
-	git config --global push.default simple
-fi
-
 # Set custom webroot
 if [ ! -z "$WEBROOT" ]; then
 	sed -i "s#root /var/www/html;#root ${WEBROOT};#g" /etc/nginx/sites-available/default.conf
@@ -43,21 +17,20 @@ if [ ! -z "$PUID" ]; then
 	adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
 fi
 
-if [ -z "$SKIP_CHOWN" ]; then
-	chown -Rf nginx.nginx /var/www/html
-fi
+# Setup access rights for nginx group
+setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null 2>&1
+setfacl -RL -m g:nginx:rwx /var/www/html/ >> /dev/null 2>&1
 
 # Copy default index.html
 if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
 	cp -f /opt/spaceonfire/html/index.html $WEBROOT
-	chown -f nginx.nginx "$WEBROOT/index.html"
 fi
 
 if [ ! -z "$SOF_PRESET" ]; then
-	select-preset $SOF_PRESET
+	/opt/spaceonfire/bin/select-preset.sh $SOF_PRESET
 fi
 
-ssmtp-setup
+/opt/spaceonfire/bin/ssmtp-setup.php
 
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
@@ -140,7 +113,7 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 						echo "xdebug.remote_autostart=1"
 						echo "xdebug.remote_connect_back=0"
 						echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}"
-						echo "xdebug.idekey=docker"
+						echo "xdebug.idekey=${XDEBUG_IDEKEY:-docker}"
 						echo "xdebug.var_display_max_depth=-1"
 						echo "xdebug.var_display_max_children=-1"
 						echo "xdebug.var_display_max_data=-1"
