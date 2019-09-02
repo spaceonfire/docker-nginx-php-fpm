@@ -56,7 +56,7 @@ build-tags-7-2:
 build-next-7-3:
   <<: *build
   variables:
-    DOCKER_IMAGE_TAG: next:next-7.3
+    DOCKER_IMAGE_TAG: next-7.3
     PHP_BASEIMAGE_VERION: $PHP_7_3
     CACHE_FROM: $CI_REGISTRY_IMAGE:next-7.3
   only:
