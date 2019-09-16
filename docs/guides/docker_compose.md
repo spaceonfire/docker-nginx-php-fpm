@@ -20,8 +20,8 @@ services:
     volumes:
       - ./:/var/www/html:Z
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 8443:443
 ```
 
 Данный пример запустит контейнер с примонтированной директорией с вашим кодом
@@ -43,7 +43,7 @@ services:
       - localhost
     environment:
       - VIRTUAL_HOST=${DOMAIN}
-      - VIRTUAL_PORT=80
+      - VIRTUAL_PORT=8080
       - SOF_PRESET=wordpress
       - SKIP_CHOWN=1
       - PUID=1000
@@ -54,7 +54,6 @@ services:
 networks:
   localhost:
     external: true
-
 ```
 
 Вы также можете передать другие переменные окружения из раздела [Конфигурация](../configure.md) документации.
