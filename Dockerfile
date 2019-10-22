@@ -1,5 +1,5 @@
-ARG PHP_BASEIMAGE_VERION=7.3.6
-FROM php:${PHP_BASEIMAGE_VERION}-fpm-alpine
+ARG PHP_BASEIMAGE_VERSION=7.3.6
+FROM php:${PHP_BASEIMAGE_VERSION}-fpm-alpine
 
 LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
 
@@ -13,46 +13,61 @@ ENV \
 # Install dependencies
 RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
 	apk add --no-cache \
-		nginx \
-		supervisor \
-		gomplate \
-		ssmtp \
-		mysql-client \
+		acl \
 		apk-cron \
-		bash \
-		su-exec \
-		git \
-		openssh-client \
-		wget \
-		curl \
-		libcurl \
 		augeas-dev \
-		libressl-dev \
+		autoconf \
+		bash \
+		curl \
 		ca-certificates \
 		dialog \
-		autoconf \
-		make \
+		freetype-dev \
+		gomplate \
+		git \
 		gcc \
-		musl-dev \
-		linux-headers \
+		icu-dev \
+		libcurl \
+		libffi-dev \
+		libgcrypt-dev \
+		libjpeg-turbo-dev \
 		libmcrypt-dev \
 		libpng-dev \
-		icu-dev \
 		libpq \
+		libressl-dev \
 		libxslt-dev \
-		libffi-dev \
-		freetype-dev \
-		sqlite-dev \
-		libjpeg-turbo-dev \
-		acl \
 		libzip-dev \
+		linux-headers \
+		make \
+		musl-dev \
+		mysql-client \
+		nginx \
+		openssh-client \
+		ssmtp \
+		sqlite-dev \
+		supervisor \
+		su-exec \
+		wget \
 		&& \
 	docker-php-ext-configure gd \
 		--with-gd \
 		--with-freetype-dir=/usr/include/ \
 		--with-png-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ && \
-	docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
+	docker-php-ext-install \
+		dom \
+		exif \
+		gd \
+		iconv \
+		intl \
+		json \
+		mysqli \
+		opcache \
+		pdo_mysql \
+		pdo_sqlite \
+		soap \
+		xsl \
+		zip \
+		&& \
 	pecl install xdebug-2.7.2 && \
 	docker-php-source delete && \
 	mkdir -p $COMPOSER_HOME && \
