@@ -19,7 +19,7 @@ fi
 
 # Setup access rights for nginx group
 setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null 2>&1
-if [[ "$SKIP_SETFACL" == "1" ]]; then
+if [[ "$SKIP_SETFACL" != "1" ]]; then
 	setfacl -RL -m g:nginx:rwx /var/www/html/ >> /dev/null 2>&1
 fi
 
