@@ -53,7 +53,7 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		--with-png-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ && \
 	docker-php-ext-install iconv pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache && \
-	pecl install xdebug-2.7.2 && \
+	pecl install xdebug-2.8.0beta2 && \
 	docker-php-source delete && \
 	mkdir -p $COMPOSER_HOME && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
