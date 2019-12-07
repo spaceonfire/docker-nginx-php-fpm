@@ -52,7 +52,10 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		--with-gd \
 		--with-freetype-dir=/usr/include/ \
 		--with-png-dir=/usr/include/ \
-		--with-jpeg-dir=/usr/include/ && \
+		--with-jpeg-dir=/usr/include/ \
+		--enable-option-checking \
+		--with-freetype \
+		--with-jpeg && \
 	docker-php-ext-install \
 		dom \
 		exif \
@@ -68,7 +71,7 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		xsl \
 		zip \
 		&& \
-	pecl install xdebug-2.7.2 && \
+	pecl install xdebug-2.8.1 && \
 	docker-php-source delete && \
 	mkdir -p $COMPOSER_HOME && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
