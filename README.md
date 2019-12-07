@@ -1,6 +1,11 @@
 # spaceonfire/nginx-php-fpm
 
-[`spaceonfire/nginx-php-fpm`](https://hub.docker.com/r/spaceonfire/nginx-php-fpm) -
+[![Latest Version][ico-version]][link-docker-hub]
+[![Image Size][ico-image-size]][link-docker-hub]
+[![Software License][ico-license]](LICENSE.md)
+[![Pipeline Status][ico-pipeline-status]][link-gitlab-pipelines]
+
+[`spaceonfire/nginx-php-fpm`][link-docker-hub] -
 Docker образ, основанный на Alpine Linux, с установленными Nginx и PHP-FPM.
 
 ## Обзор
@@ -14,14 +19,15 @@ Docker образ, основанный на Alpine Linux, с установле
 
 ### Версии ПО в образе
 
-| Docker Tag           | Git Release   | PHP Version | Alpine Version |
-| -------------------- | ------------- | ----------- | -------------- |
-| latest-7.3/2.0.0-7.3 | Master Branch | 7.3.8       | 3.10.0         |
-| latest-7.2/2.0.0-7.2 | Master Branch | 7.2.21      | 3.10.0         |
+| Docker Tag           | PHP Version |
+| -------------------- | ----------- |
+| latest-7.4/2.2.0-7.4 | 7.4.0       |
+| latest-7.3/2.2.0-7.3 | 7.3.12      |
+| latest-7.2/2.2.0-7.2 | 7.2.25      |
 
 ## Быстрый старт
 
-Спуллить образ с Docker Hub:
+Скачать образ с Docker Hub:
 
 ```
 docker pull spaceonfire/nginx-php-fpm:latest
@@ -32,7 +38,7 @@ docker pull spaceonfire/nginx-php-fpm:latest
 Чтобы запустить ваше простое PHP приложение, не требующее особых правил роутинга, в директории с исходным кодом выполните:
 
 ```
-docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest
+docker run -d -v `pwd`:/var/www/html -p 8080:8080 spaceonfire/nginx-php-fpm:latest
 ```
 
 После запуска контейнера вы можете открыть в браузере `http://localhost:8080/`.
@@ -53,3 +59,11 @@ docker run -d -v `pwd`:/var/www/html -p 80:8080 spaceonfire/nginx-php-fpm:latest
 ## Гиды
 
 -   [Docker Compose](./docs/guides/docker_compose.md)
+
+[ico-image-size]: https://img.shields.io/microbadger/image-size/spaceonfire/nginx-php-fpm
+[ico-pipeline-status]: https://gitlab.com/spaceonfire/open-source/nginx-php-fpm/badges/master/pipeline.svg
+[ico-version]: https://img.shields.io/github/v/tag/dockeronfire/nginx-php-fpm?sort=semver
+[ico-license]: https://img.shields.io/github/license/dockeronfire/nginx-php-fpm
+
+[link-gitlab-pipelines]: https://gitlab.com/spaceonfire/open-source/nginx-php-fpm/pipelines
+[link-docker-hub]: https://hub.docker.com/r/spaceonfire/nginx-php-fpm
