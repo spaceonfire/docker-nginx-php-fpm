@@ -68,7 +68,7 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		xsl \
 		zip \
 		&& \
-	pecl install xdebug-2.8.0beta2 && \
+	pecl install xdebug-2.8.1 && \
 	docker-php-source delete && \
 	mkdir -p $COMPOSER_HOME && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
