@@ -5,7 +5,7 @@ services:
     build: ../../
     image: spaceonfire/nginx-php-fpm:next
     ports:
-    - 8080:80
+    - 8080:8080
     environment:
     - SOF_PRESET=wordpress
     - PAGER=more

@@ -52,7 +52,10 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		--with-gd \
 		--with-freetype-dir=/usr/include/ \
 		--with-png-dir=/usr/include/ \
-		--with-jpeg-dir=/usr/include/ && \
+		--with-jpeg-dir=/usr/include/ \
+		--enable-option-checking \
+		--with-freetype \
+		--with-jpeg && \
 	docker-php-ext-install \
 		dom \
 		exif \
