@@ -25,7 +25,7 @@ variables:
 # =========================================
 
 build-next-7-2:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: next-7.2
     PHP_BASEIMAGE_VERSION: $PHP_7_2
@@ -34,7 +34,7 @@ build-next-7-2:
     - next
 
 build-master-7-2:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: latest-7.2
     PHP_BASEIMAGE_VERSION: $PHP_7_2
@@ -43,7 +43,7 @@ build-master-7-2:
     - master
 
 build-tags-7-2:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME-7.2
     PHP_BASEIMAGE_VERSION: $PHP_7_2
@@ -55,7 +55,7 @@ build-tags-7-2:
 # =========================================
 
 build-next-7-3:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: next-7.3
     PHP_BASEIMAGE_VERSION: $PHP_7_3
@@ -64,7 +64,7 @@ build-next-7-3:
     - next
 
 build-master-7-3:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: latest-7.3
     PHP_BASEIMAGE_VERSION: $PHP_7_3
@@ -73,7 +73,7 @@ build-master-7-3:
     - master
 
 build-tags-7-3:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME-7.3
     PHP_BASEIMAGE_VERSION: $PHP_7_3
@@ -85,7 +85,7 @@ build-tags-7-3:
 # =========================================
 
 build-next-7-4:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: next-7.4
     PHP_BASEIMAGE_VERSION: $PHP_7_4
@@ -94,7 +94,7 @@ build-next-7-4:
     - next
 
 .build-master-7-4:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: latest-7.4
     PHP_BASEIMAGE_VERSION: $PHP_7_4
@@ -103,7 +103,7 @@ build-next-7-4:
     - master
 
 .build-tags-7-4:
-  <<: *build
+  extends: .build
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME-7.4
     PHP_BASEIMAGE_VERSION: $PHP_7_4
@@ -115,7 +115,7 @@ build-next-7-4:
 # =========================================
 
 build-next-latest:
-  <<: *build
+  extends: .build
   stage: latest
   variables:
     DOCKER_IMAGE_TAG: next
@@ -125,7 +125,7 @@ build-next-latest:
     - next
 
 build-master-latest:
-  <<: *build
+  extends: .build
   stage: latest
   variables:
     DOCKER_IMAGE_TAG: latest
@@ -135,7 +135,7 @@ build-master-latest:
     - master
 
 build-tags-latest:
-  <<: *build
+  extends: .build
   stage: latest
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME
