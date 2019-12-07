@@ -93,7 +93,7 @@ build-next-7-4:
   only:
     - next
 
-.build-master-7-4:
+build-master-7-4:
   extends: .build
   variables:
     DOCKER_IMAGE_TAG: latest-7.4
@@ -102,7 +102,7 @@ build-next-7-4:
   only:
     - master
 
-.build-tags-7-4:
+build-tags-7-4:
   extends: .build
   variables:
     DOCKER_IMAGE_TAG: $CI_COMMIT_REF_NAME-7.4
