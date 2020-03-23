@@ -28,3 +28,13 @@
 ```
 docker run -d -e "REAL_IP_HEADER=1" -e "REAL_IP_FROM=10.1.0.0/16" spaceonfire/nginx-php-fpm:latest
 ```
+
+## Read timeout
+
+Чтобы изменить таймаут чтения, укажите настройку `NGINX_READ_TIMEOUT` в переменных окружения, например:
+
+```
+docker run -d -e NGINX_READ_TIMEOUT=300 spaceonfire/nginx-php-fpm:latest
+```
+
+Для не продакшн окружений значение таймаута автоматически выставляется на `9999`.
