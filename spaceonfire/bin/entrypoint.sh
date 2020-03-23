@@ -34,6 +34,18 @@ fi
 
 /opt/spaceonfire/bin/ssmtp-setup.php
 
+# Set Nginx read timeout
+if [[ -z "$NGINX_READ_TIMEOUT" ]] && [[ "$APPLICATION_ENV" != "production" ]]; then
+	NGINX_READ_TIMEOUT=9999
+fi
+
+if [[ ! -z "$NGINX_READ_TIMEOUT" ]]; then
+	{
+		echo ""
+		echo "fastcgi_read_timeout $NGINX_READ_TIMEOUT;"
+	} >> /etc/nginx/fastcgi_params
+fi
+
 # Prevent config files from being filled to infinity by force of stop and restart the container
 lastlinephpconf="$(grep "." /usr/local/etc/php-fpm.conf | tail -1)"
 if [[ $lastlinephpconf == *"php_flag[display_errors]"* ]]; then

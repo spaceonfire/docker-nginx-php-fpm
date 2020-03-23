@@ -3,9 +3,9 @@ stages:
   - latest
 
 variables:
-  PHP_7_2: 7.2.25
-  PHP_7_3: 7.3.12
-  PHP_7_4: 7.4.0
+  PHP_7_2: 7.2.29
+  PHP_7_3: 7.3.16
+  PHP_7_4: 7.4.4
 
 .build: &build
   stage: build
