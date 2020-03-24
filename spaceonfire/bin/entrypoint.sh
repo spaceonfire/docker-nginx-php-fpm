@@ -40,10 +40,13 @@ if [[ -z "$NGINX_READ_TIMEOUT" ]] && [[ "$APPLICATION_ENV" != "production" ]]; t
 fi
 
 if [[ ! -z "$NGINX_READ_TIMEOUT" ]]; then
-	{
-		echo ""
-		echo "fastcgi_read_timeout $NGINX_READ_TIMEOUT;"
-	} >> /etc/nginx/fastcgi_params
+	FastCgiParamsFile="/etc/nginx/fastcgi_params"
+	if ! grep -q fastcgi_read_timeout "$FastCgiParamsFile"; then
+		{
+			echo ""
+			echo "fastcgi_read_timeout $NGINX_READ_TIMEOUT;"
+		} >> $FastCgiParamsFile
+	fi
 fi
 
 # Prevent config files from being filled to infinity by force of stop and restart the container
