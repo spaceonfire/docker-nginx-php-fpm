@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  test:
+    build:
+      context: ../../
+      args:
+        PHP_BASEIMAGE_VERSION: 8.0.0-rc
+        XDEBUG_VERSION: master
+        PHP_EXTENSIONS: "dom exif gd iconv intl mysqli opcache pdo pdo soap xsl zip"
+    image: spaceonfire/nginx-php-fpm:next-8.0.0
+    entrypoint:
+      - /bin/bash
+    tty: true
+    ports:
+      - 8080:8080
+    environment:
+      - PAGER=more
