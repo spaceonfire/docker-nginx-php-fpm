@@ -3,11 +3,12 @@ stages:
   - latest
 
 variables:
-  PHP_7_2: 7.2.29
-  PHP_7_3: 7.3.16
-  PHP_7_4: 7.4.4
+  PHP_7_2: 7.2.33
+  PHP_7_3: 7.3.21
+  PHP_7_4: 7.4.9
+  PHP_8_0: 8.0-rc
 
-.build: &build
+.build:
   stage: build
   tags:
     - docker
@@ -17,9 +18,12 @@ variables:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker pull "$CACHE_FROM" || true
-    - docker build -t "$CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG" --cache-from "$CACHE_FROM" --build-arg PHP_BASEIMAGE_VERSION=$PHP_BASEIMAGE_VERSION .
-    - docker push "$CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG"
+    - wget https://github.com/hairyhenderson/gomplate/releases/download/v3.7.0/gomplate_linux-amd64-slim -O /usr/local/bin/gomplate
+    - chmod +x /usr/local/bin/gomplate
+    - gomplate -f build.sh.tmpl -o build.sh
+    - sh build.sh
+  after_script:
+    - cat build.sh
 
 # PHP 7.2
 # =========================================
@@ -110,6 +114,20 @@ build-tags-7-4:
     CACHE_FROM: $CI_REGISTRY_IMAGE:latest-7.4
   only:
     - tags
+
+# PHP 8.0
+# =========================================
+
+build-next-8-0:
+  extends: .build
+  variables:
+    DOCKER_IMAGE_TAG: next-8.0-rc
+    PHP_BASEIMAGE_VERSION: $PHP_8_0
+    XDEBUG_VERSION: master
+    PHP_EXTENSIONS: "dom exif gd iconv intl mysqli opcache pdo pdo soap xsl zip"
+    CACHE_FROM: $CI_REGISTRY_IMAGE:next-8.0-rc
+  only:
+    - next
 
 # Latest
 # =========================================
