@@ -21,9 +21,10 @@ Docker образ, основанный на Alpine Linux, с установле
 
 | Docker Tag           | PHP Version |
 | -------------------- | ----------- |
-| latest-7.4/2.2.0-7.4 | 7.4.0       |
-| latest-7.3/2.2.0-7.3 | 7.3.12      |
-| latest-7.2/2.2.0-7.2 | 7.2.25      |
+| latest-7.4/2.3.0-7.4 | 7.4.9       |
+| latest-7.3/2.3.0-7.3 | 7.3.21      |
+| latest-7.2/2.3.0-7.2 | 7.2.33      |
+| next-8.0-rc          | 8.0.0-rc    |
 
 ## Быстрый старт
 
@@ -64,6 +65,5 @@ docker run -d -v `pwd`:/var/www/html -p 8080:8080 spaceonfire/nginx-php-fpm:late
 [ico-pipeline-status]: https://gitlab.com/spaceonfire/open-source/nginx-php-fpm/badges/master/pipeline.svg
 [ico-version]: https://img.shields.io/github/v/tag/spaceonfire/docker-nginx-php-fpm?sort=semver
 [ico-license]: https://img.shields.io/github/license/spaceonfire/docker-nginx-php-fpm
-
 [link-gitlab-pipelines]: https://gitlab.com/spaceonfire/open-source/nginx-php-fpm/pipelines
 [link-docker-hub]: https://hub.docker.com/r/spaceonfire/nginx-php-fpm
