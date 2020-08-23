@@ -1,4 +1,4 @@
-ARG PHP_BASEIMAGE_VERSION=7.4.4
+ARG PHP_BASEIMAGE_VERSION=7.4.9
 FROM php:${PHP_BASEIMAGE_VERSION}-fpm-alpine
 
 LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
@@ -10,9 +10,15 @@ ENV \
 	# Fix for iconv: https://github.com/docker-library/php/issues/240
 	LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
+ARG XDEBUG_VERSION=2.9.6
+ARG PHP_EXTENSIONS="dom exif gd iconv intl json mysqli opcache pdo pdo soap xsl zip"
+
 # Install dependencies
-RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-	apk add --no-cache \
+RUN { \
+		echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main"; \
+		echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community"; \
+	} >> /etc/apk/repositories && \
+	apk add --update \
 		acl \
 		apk-cron \
 		augeas-dev \
@@ -40,13 +46,14 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		make \
 		musl-dev \
 		mysql-client \
-		nginx \
+		nginx@edge \
 		openssh-client \
 		ssmtp \
 		sqlite-dev \
 		supervisor \
 		su-exec \
 		wget \
+		gnu-libiconv@community \
 		&& \
 	docker-php-ext-configure gd \
 		--with-gd \
@@ -56,31 +63,19 @@ RUN echo @testing http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/re
 		--enable-option-checking \
 		--with-freetype \
 		--with-jpeg && \
-	docker-php-ext-install \
-		dom \
-		exif \
-		gd \
-		iconv \
-		intl \
-		json \
-		mysqli \
-		opcache \
-		pdo_mysql \
-		pdo_sqlite \
-		soap \
-		xsl \
-		zip \
-		&& \
-	pecl install xdebug-2.8.1 && \
+	docker-php-ext-install $PHP_EXTENSIONS && \
+	git clone -b $XDEBUG_VERSION https://github.com/xdebug/xdebug.git /tmp/xdebug && \
+	cd /tmp/xdebug && phpize && ./configure --enable-xdebug && make && make install && cd - && \
+	rm -rf /tmp/xdebug && \
 	docker-php-source delete && \
+	apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf && \
+	rm -rf /var/cache/apk/* && \
 	mkdir -p $COMPOSER_HOME && \
 	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
 	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
 	php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
 	php composer-setup.php --install-dir=/usr/bin --filename=composer && \
 	php -r "unlink('composer-setup.php');" && \
-	apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf && \
-	apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv && \
 	composer global require hirak/prestissimo
 
 # tweak php-fpm config
