@@ -6,7 +6,7 @@ variables:
   PHP_7_2: 7.2.33
   PHP_7_3: 7.3.21
   PHP_7_4: 7.4.9
-  PHP_8_0: 8.0.0-rc
+  PHP_8_0: 8.0-rc
 
 .build:
   stage: build
