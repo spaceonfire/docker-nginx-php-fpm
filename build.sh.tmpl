@@ -7,7 +7,7 @@ set -e
 {{- range $_, $envName := slice "PHP_BASEIMAGE_VERSION" "XDEBUG_VERSION" "PHP_EXTENSIONS" -}}
 	{{- $envValue := env.Getenv $envName -}}
 	{{- if ne $envValue "" -}}
-		{{- $buildScript = (printf "%s --build-arg %s=%s" $buildScript $envName $envValue) -}}
+		{{- $buildScript = (printf "%s --build-arg %s=\"%s\"" $buildScript $envName $envValue) -}}
 	{{- end -}}
 {{- end -}}
 
