@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+{{ $cacheFrom := env.Getenv "CACHE_FROM" -}}
+{{ $buildScript := env.ExpandEnv "docker build -t $CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG" -}}
+
+{{- range $_, $envName := slice "PHP_BASEIMAGE_VERSION" "XDEBUG_VERSION" "PHP_EXTENSIONS" -}}
+	{{- $envValue := env.Getenv $envName -}}
+	{{- if ne $envValue "" -}}
+		{{- $buildScript = (printf "%s --build-arg %s=\"%s\"" $buildScript $envName $envValue) -}}
+	{{- end -}}
+{{- end -}}
+
+{{ if ne $cacheFrom "" }}
+	{{- $buildScript = (printf "%s --cache-from %s" $buildScript $cacheFrom) -}}
+	{{- printf "docker pull %s || true" $cacheFrom -}}
+{{ end }}
+{{ printf "%s ." $buildScript }}
+{{ env.ExpandEnv "docker push $CI_REGISTRY_IMAGE:$DOCKER_IMAGE_TAG" -}}
