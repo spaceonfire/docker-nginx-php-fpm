@@ -1,3 +1,6 @@
+# Project files
+build.sh
+
 # Numerous always-ignore extensions
 *.diff
 *.err
