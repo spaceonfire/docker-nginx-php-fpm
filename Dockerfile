@@ -11,7 +11,7 @@ ENV \
 	LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
 ARG XDEBUG_VERSION=2.9.6
-ARG PHP_EXTENSIONS="dom exif gd iconv intl json mysqli opcache pdo pdo soap xsl zip"
+ARG PHP_EXTENSIONS="dom exif gd iconv intl json mysqli opcache pdo_mysql pdo_sqlite soap xsl zip"
 
 # Install dependencies
 RUN { \
