@@ -124,7 +124,7 @@ build-next-8-0:
     DOCKER_IMAGE_TAG: next-8.0-rc
     PHP_BASEIMAGE_VERSION: $PHP_8_0
     XDEBUG_VERSION: master
-    PHP_EXTENSIONS: "dom exif gd iconv intl mysqli opcache pdo pdo soap xsl zip"
+    PHP_EXTENSIONS: "dom exif gd iconv intl mysqli opcache pdo_mysql pdo_sqlite soap xsl zip"
     CACHE_FROM: $CI_REGISTRY_IMAGE:next-8.0-rc
   only:
     - next
