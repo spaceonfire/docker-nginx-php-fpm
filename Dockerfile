@@ -1,4 +1,4 @@
-ARG PHP_BASEIMAGE_VERSION=7.4.9
+ARG PHP_BASEIMAGE_VERSION=7.4.10
 FROM php:${PHP_BASEIMAGE_VERSION}-fpm-alpine
 
 LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
@@ -10,15 +10,11 @@ ENV \
 	# Fix for iconv: https://github.com/docker-library/php/issues/240
 	LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
-ARG XDEBUG_VERSION=2.9.6
+ARG XDEBUG_VERSION=2.9.8
 ARG PHP_EXTENSIONS="dom exif gd iconv intl json mysqli opcache pdo_mysql pdo_sqlite soap xsl zip"
 
 # Install dependencies
-RUN { \
-		echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main"; \
-		echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community"; \
-	} >> /etc/apk/repositories && \
-	apk add --update \
+RUN apk add --update \
 		acl \
 		apk-cron \
 		augeas-dev \
@@ -46,14 +42,14 @@ RUN { \
 		make \
 		musl-dev \
 		mysql-client \
-		nginx@edge \
+		nginx \
 		openssh-client \
 		ssmtp \
 		sqlite-dev \
 		supervisor \
 		su-exec \
 		wget \
-		gnu-libiconv@community \
+		gnu-libiconv \
 		&& \
 	docker-php-ext-configure gd \
 		--with-gd \
