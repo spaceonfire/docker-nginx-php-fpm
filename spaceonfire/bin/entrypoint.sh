@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Set custom webroot
-if [ ! -z "$WEBROOT" ]; then
+if [ -n "$WEBROOT" ]; then
 	sed -i "s#root /var/www/html;#root ${WEBROOT};#g" /etc/nginx/sites-available/default.conf
 else
 	WEBROOT=/var/www/html
 fi
 
 # Recreate nginx user with passed UID and GID
-if [ ! -z "$PUID" ]; then
+if [ -n "$PUID" ]; then
 	if [ -z "$PGID" ]; then
 		PGID=${PUID}
 	fi
@@ -21,9 +21,17 @@ if [ ! -z "$PUID" ]; then
 fi
 
 # Setup access rights for nginx group
-setfacl -RL -m g:nginx:rwx $COMPOSER_HOME >> /dev/null 2>&1
+{
+	setfacl -RLm g:nginx:rwx "$COMPOSER_HOME"
+	setfacl -RLdm g:nginx:rwx "$COMPOSER_HOME"
+	setfacl -RLm g:nginx:rwx /opt/spaceonfire/composer/v1
+	setfacl -RLdm g:nginx:rwx /opt/spaceonfire/composer/v1
+	setfacl -RLm g:nginx:rwx /opt/spaceonfire/composer/v2
+	setfacl -RLdm g:nginx:rwx /opt/spaceonfire/composer/v2
+} >>/dev/null 2>&1
+
 if [[ "$SKIP_SETFACL" != "1" ]]; then
-	setfacl -RL -m g:nginx:rwx /var/www/html/ >> /dev/null 2>&1
+	setfacl -RLdm g:nginx:rwx /var/www/html/ >>/dev/null 2>&1
 fi
 
 # Copy default index.html
@@ -31,8 +39,12 @@ if [ $(ls $WEBROOT/index.{php,htm,html} 2>/dev/null | wc -l) -eq 0 ]; then
 	cp -f /opt/spaceonfire/html/index.html $WEBROOT
 fi
 
-if [ ! -z "$SOF_PRESET" ]; then
+if [ -n "$SOF_PRESET" ]; then
 	/opt/spaceonfire/bin/select-preset.sh $SOF_PRESET
+fi
+
+if [ -n "$COMPOSER_VERSION" ]; then
+	/opt/spaceonfire/bin/select-composer.sh $COMPOSER_VERSION
 fi
 
 /opt/spaceonfire/bin/ssmtp-setup.php
@@ -42,13 +54,13 @@ if [[ -z "$NGINX_READ_TIMEOUT" ]] && [[ "$APPLICATION_ENV" != "production" ]]; t
 	NGINX_READ_TIMEOUT=9999
 fi
 
-if [[ ! -z "$NGINX_READ_TIMEOUT" ]]; then
+if [[ -n "$NGINX_READ_TIMEOUT" ]]; then
 	FastCgiParamsFile="/etc/nginx/fastcgi_params"
 	if ! grep -q fastcgi_read_timeout "$FastCgiParamsFile"; then
 		{
 			echo ""
 			echo "fastcgi_read_timeout $NGINX_READ_TIMEOUT;"
-		} >> $FastCgiParamsFile
+		} >>$FastCgiParamsFile
 	fi
 fi
 
@@ -59,21 +71,21 @@ if [[ $lastlinephpconf == *"php_flag[display_errors]"* ]]; then
 fi
 
 # Display PHP error's or not
-if [[ "$ERRORS" != "1" ]] ; then
-	echo "php_flag[display_errors] = off" >> /usr/local/etc/php-fpm.conf
+if [[ "$ERRORS" != "1" ]]; then
+	echo "php_flag[display_errors] = off" >>/usr/local/etc/php-fpm.conf
 else
-	echo "php_flag[display_errors] = on" >> /usr/local/etc/php-fpm.conf
+	echo "php_flag[display_errors] = on" >>/usr/local/etc/php-fpm.conf
 fi
 
 # Display Version Details or not
-if [[ "$HIDE_NGINX_HEADERS" == "0" ]] ; then
+if [[ "$HIDE_NGINX_HEADERS" == "0" ]]; then
 	sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
 else
 	sed -i "s/expose_php = On/expose_php = Off/g" /usr/local/etc/php-fpm.conf
 fi
 
 # Pass real-ip to logs when behind ELB, etc
-if [[ "$REAL_IP_HEADER" == "1" ]] ; then
+if [[ "$REAL_IP_HEADER" == "1" ]]; then
 	vhosts=('/etc/nginx/sites-available/default.conf' '/etc/nginx/sites-available/default-ssl.conf')
 	for vhost in vhosts; do
 		sed -i "s/#real_ip_header X-Forwarded-For;/real_ip_header X-Forwarded-For;/" $vhost
@@ -85,30 +97,30 @@ if [[ "$REAL_IP_HEADER" == "1" ]] ; then
 fi
 
 #Display errors in docker logs
-if [ ! -z "$PHP_ERRORS_STDERR" ]; then
-	echo "log_errors = On" >> /usr/local/etc/php/conf.d/docker-vars.ini
-	echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/docker-vars.ini
+if [ -n "$PHP_ERRORS_STDERR" ]; then
+	echo "log_errors = On" >>/usr/local/etc/php/conf.d/docker-vars.ini
+	echo "error_log = /dev/stderr" >>/usr/local/etc/php/conf.d/docker-vars.ini
 fi
 
 # Increase the memory_limit
-if [ ! -z "$PHP_MEM_LIMIT" ]; then
+if [ -n "$PHP_MEM_LIMIT" ]; then
 	sed -i "s/memory_limit = 128M/memory_limit = ${PHP_MEM_LIMIT}M/g" /usr/local/etc/php/conf.d/docker-vars.ini
 fi
 
 # Increase the post_max_size
-if [ ! -z "$PHP_POST_MAX_SIZE" ]; then
+if [ -n "$PHP_POST_MAX_SIZE" ]; then
 	sed -i "s/post_max_size = 100M/post_max_size = ${PHP_POST_MAX_SIZE}M/g" /usr/local/etc/php/conf.d/docker-vars.ini
 fi
 
 # Increase the upload_max_filesize
-if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
+if [ -n "$PHP_UPLOAD_MAX_FILESIZE" ]; then
 	sed -i "s/upload_max_filesize = 100M/upload_max_filesize= ${PHP_UPLOAD_MAX_FILESIZE}M/g" /usr/local/etc/php/conf.d/docker-vars.ini
 fi
 
 # Enable xdebug only
 if [ "$APPLICATION_ENV" != "production" ]; then
 	XdebugFile='/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini'
-	if [[ "$ENABLE_XDEBUG" == "1" ]] ; then
+	if [[ "$ENABLE_XDEBUG" == "1" ]]; then
 		if [ -f $XdebugFile ]; then
 			echo "Xdebug enabled"
 		else
@@ -120,7 +132,7 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 			if [ -f $XdebugFile ]; then
 				# Get default route ip if not set
 				if [ -z "$XDEBUG_REMOTE_HOST" ]; then
-					XDEBUG_REMOTE_HOST=$(ip route|awk '/default/ { print $3 }')
+					XDEBUG_REMOTE_HOST=$(ip route | awk '/default/ { print $3 }')
 				fi
 
 				# See if file contains xdebug text.
@@ -129,15 +141,14 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 				else
 					{
 						echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)"
-						echo "xdebug.remote_enable=1"
-						echo "xdebug.remote_autostart=1"
-						echo "xdebug.remote_connect_back=0"
-						echo "xdebug.remote_host=${XDEBUG_REMOTE_HOST}"
+						echo "xdebug.mode=debug"
+						echo "xdebug.start_with_request=1"
 						echo "xdebug.idekey=${XDEBUG_IDEKEY:-docker}"
+						echo "xdebug.client_host=${XDEBUG_REMOTE_HOST}"
 						echo "xdebug.var_display_max_depth=-1"
 						echo "xdebug.var_display_max_children=-1"
 						echo "xdebug.var_display_max_data=-1"
-					} > $XdebugFile
+					} >$XdebugFile
 				fi
 			fi
 		fi
@@ -150,12 +161,13 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 fi
 
 # Run custom scripts
-if [[ "$RUN_SCRIPTS" == "1" ]] ; then
+if [[ "$RUN_SCRIPTS" == "1" ]]; then
 	if [ -d "/var/www/html/scripts/" ]; then
-		# make scripts executable incase they aren't
-		chmod -Rf 750 /var/www/html/scripts/*; sync;
+		# make scripts executable in case they aren't
+		chmod -Rf 750 /var/www/html/scripts/*
+		sync
 		# run scripts in number order
-		for i in /var/www/html/scripts/*; do $i ; done
+		for i in /var/www/html/scripts/*; do $i; done
 	else
 		echo "Can't find script directory"
 	fi
