@@ -1,4 +1,4 @@
-ARG PHP_BASEIMAGE_VERSION=7.4.10
+ARG PHP_BASEIMAGE_VERSION=8.0.2
 FROM php:${PHP_BASEIMAGE_VERSION}-fpm-alpine
 
 LABEL maintainer="Constantine Karnaukhov <genteelknight@gmail.com>"
@@ -10,8 +10,8 @@ ENV \
 	# Fix for iconv: https://github.com/docker-library/php/issues/240
 	LD_PRELOAD="/usr/lib/preloadable_libiconv.so php"
 
-ARG XDEBUG_VERSION=2.9.8
-ARG PHP_EXTENSIONS="dom exif gd iconv intl json mysqli opcache pdo_mysql pdo_sqlite soap xsl zip"
+ARG XDEBUG_VERSION=3.0.2
+ARG PHP_EXTENSIONS="dom exif gd iconv intl mysqli opcache pdo_mysql pdo_sqlite soap xsl zip"
 
 # Install dependencies
 RUN apk add --update \
@@ -65,14 +65,7 @@ RUN apk add --update \
 	rm -rf /tmp/xdebug && \
 	docker-php-source delete && \
 	apk del gcc musl-dev linux-headers libffi-dev augeas-dev make autoconf && \
-	rm -rf /var/cache/apk/* && \
-	mkdir -p $COMPOSER_HOME && \
-	EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
-	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-	php -r "if (hash_file('SHA384', 'composer-setup.php') === '${EXPECTED_COMPOSER_SIGNATURE}') { echo 'Composer.phar Installer verified'; } else { echo 'Composer.phar Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-	php composer-setup.php --install-dir=/usr/bin --filename=composer && \
-	php -r "unlink('composer-setup.php');" && \
-	composer global require hirak/prestissimo
+	rm -rf /var/cache/apk/*
 
 # tweak php-fpm config
 RUN echo "" > /usr/local/etc/php/conf.d/05-php.ini && \
@@ -116,6 +109,7 @@ RUN mkdir -p /etc/nginx && \
 	ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
 # Add spaceonfire
+ENV PATH="${PATH}:${COMPOSER_HOME}/bin:${COMPOSER_HOME}/vendor/bin"
 COPY ./spaceonfire/ /opt/spaceonfire/
 RUN chmod -R +x /opt/spaceonfire/bin/* && /opt/spaceonfire/bin/install.sh
 
