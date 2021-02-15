@@ -141,7 +141,7 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 				else
 					{
 						echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)"
-						echo "xdebug.mode=debug"
+						echo "xdebug.mode=develop,debug"
 						echo "xdebug.start_with_request=1"
 						echo "xdebug.idekey=${XDEBUG_IDEKEY:-docker}"
 						echo "xdebug.client_host=${XDEBUG_REMOTE_HOST}"
