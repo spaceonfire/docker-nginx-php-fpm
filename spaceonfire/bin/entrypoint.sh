@@ -145,9 +145,9 @@ if [ "$APPLICATION_ENV" != "production" ]; then
 						echo "xdebug.start_with_request=1"
 						echo "xdebug.idekey=${XDEBUG_IDEKEY:-docker}"
 						echo "xdebug.client_host=${XDEBUG_REMOTE_HOST}"
-						echo "xdebug.var_display_max_depth=-1"
-						echo "xdebug.var_display_max_children=-1"
-						echo "xdebug.var_display_max_data=-1"
+						echo ";xdebug.var_display_max_depth=-1"
+						echo ";xdebug.var_display_max_children=-1"
+						echo ";xdebug.var_display_max_data=-1"
 					} >$XdebugFile
 				fi
 			fi
